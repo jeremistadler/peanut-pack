@@ -1,0 +1,4 @@
+node_modules
+compressed
+.DS_Store
+yarn-error.log
