@@ -20,19 +20,26 @@ export function compressSerie(serie: AnyInputSerie): Uint8Array {
 function compressNumberSerie(serie: InputNumberSerie): Uint8Array {
   const stats = calculateStats(serie.values)
 
+  const valueOffset = stats.p50 > 1 ? Math.floor(stats.p50) : 0
   let values = serie.values
-  if (stats.min > 0) {
-    values = serie.values.map(f => f - stats.min)
+  if (valueOffset > 0) {
+    values = serie.values.map(f => f - valueOffset)
   }
 
   const compressedValues = runLengthEncode(values)
 
   const headerData = runLengthEncode([
     TRANSFORM_RLE,
+    valueOffset,
     stats.count,
     stats.unique,
     stats.maxDecimals,
     stats.min,
+    stats.p02,
+    stats.p05,
+    stats.p50,
+    stats.p95,
+    stats.p98,
     stats.max,
   ])
 

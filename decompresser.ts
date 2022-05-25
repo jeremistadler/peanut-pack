@@ -16,13 +16,23 @@ export function decompressSerie(serie: Uint8Array): AnyDecompressedSerie {
 type Header = ReturnType<typeof readHeader>
 function readHeader(rawData: Uint8Array) {
   const headerSize = rawData[0]
-  const [flags, count, unique, maxDecimals, min, max] = runLengthDecode(
-    rawData,
-    1,
-    headerSize + 1
-  )
+  const [
+    flags,
+    valueOffset,
+    count,
+    unique,
+    maxDecimals,
+    min,
+    p02,
+    p05,
+    p50,
+    p95,
+    p98,
+    max,
+  ] = runLengthDecode(rawData, 1, headerSize + 1)
 
   return {
+    valueOffset,
     headerSize,
     flags,
     count,
@@ -30,6 +40,11 @@ function readHeader(rawData: Uint8Array) {
     maxDecimals,
     min,
     max,
+    p02,
+    p05,
+    p50,
+    p95,
+    p98,
   }
 }
 
@@ -39,9 +54,9 @@ function decompressNumberSerie(
 ): DecompressedNumberSerie {
   let values = runLengthDecode(serie, header.headerSize + 1, serie.length)
 
-  if (header.min > 0) {
+  if (header.valueOffset !== 0) {
     for (let i = 0; i < values.length; i++) {
-      values[i] = values[i] + header.min
+      values[i] = values[i] + header.valueOffset
     }
   }
 

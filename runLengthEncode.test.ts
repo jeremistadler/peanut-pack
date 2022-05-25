@@ -2,12 +2,12 @@ import { runLengthEncode } from './runLengthEncode'
 
 test('encode 4 small repeated', () => {
   const result = runLengthEncode([1, 1, 1, 1])
-  expect(result).toEqual(new Uint8Array([0, 4, 1]))
+  expect(result).toEqual(new Uint8Array([13, 4, 1]))
 })
 
 test('encode 4 small unique', () => {
   const result = runLengthEncode([1, 2, 3, 4])
-  expect(result).toEqual(new Uint8Array([1, 4, 1, 2, 3, 4]))
+  expect(result).toEqual(new Uint8Array([12, 4, 1, 2, 3, 4]))
 })
 
 test('encode repeated and unique small', () => {
@@ -16,13 +16,13 @@ test('encode repeated and unique small', () => {
 
   expect(result).toEqual(
     new Uint8Array([
-      8, // two item range
+      9, // two item range
       1, // two 1:s
 
-      8, // two item range
+      9, // two item range
       2, // two 1:s
 
-      9, // two item range unique
+      8, // two item range unique
       3, // value 3
       4, // value 4
     ])
@@ -36,9 +36,9 @@ test('encode negative', () => {
 
   expect(result).toEqual(
     new Uint8Array([
-      5, // IS_UNIQUE_RANGE(1) + IS_ONE_ITEM_RANGE(4)
+      4, // IS_UNIQUE_RANGE(1) + IS_ONE_ITEM_RANGE(4)
       255, // value: -1
-      25, // value: IS_UNIQUE_RANGE(1) + IS_TWO_ITEM_RANGE(8) + IS_16_BIT_VALUES(16)
+      40, // value: IS_UNIQUE_RANGE(1) + IS_TWO_ITEM_RANGE(8) + IS_16_BIT_VALUES(16)
       56, // value: -200
       255, // value: -200
       48, // value: -2000
@@ -52,20 +52,20 @@ test('run length encoder 32 bit values', () => {
   const result = runLengthEncode(input)
   expect(result).toEqual(
     new Uint8Array([
-      21, // IS_UNIQUE_RANGE | IS_ONE_ITEM_RANGE(4) | IS_16_BIT_VALUES
+      36, // IS_ONE_ITEM_RANGE(4) | IS_16_BIT_VALUES(128)
       232, // 1000 part 1
       3, // 1000 part 2
 
-      40, // IS_32_BIT_VALUES(32) | IS_TWO_ITEM_RANGE = 32 + 8 = 40
+      105, // IS_32_BIT_VALUES(160) | IS_TWO_ITEM_RANGE(8) | IS_REPEATED_RANGE(1)
       224, // 300000 part 1
       147, // 300000 part 2
       4, // 300000 part 3
       0, // 300000 part 4
 
-      5, // IS_UNIQUE_RANGE(1) | IS_ONE_ITEM_RANGE(4)
+      4, // IS_ONE_ITEM_RANGE(4)
       5, // value 5
 
-      37, // IS_32_BIT_VALUES(32) | IS_UNIQUE_RANGE(1) | IS_ONE_ITEM_RANGE(4)
+      100, // IS_32_BIT_VALUES(160) |  IS_ONE_ITEM_RANGE(4)
       32, // part 1
       161, // part 2
       7, // part 3
@@ -79,7 +79,7 @@ test('run length encoder 16 bit length', () => {
   const result = runLengthEncode(input)
   expect(result).toEqual(
     new Uint8Array([
-      64, // IS_16_BIT_LENGTH (64)
+      25, // IS_16_BIT_LENGTH (64)
       232, // len 1
       3, // len 2
       0, //value
@@ -92,7 +92,7 @@ test('run length encoder 16 bit length 16 bit values', () => {
   const result = runLengthEncode(input)
   expect(result).toEqual(
     new Uint8Array([
-      80, // IS_16_BIT_LENGTH (64) + IS_16_BIT_VALUES (16)
+      57, // IS_16_BIT_LENGTH (64) + IS_16_BIT_VALUES (16)
       232, // len 1
       3, // len 2
       212, //value 1
@@ -107,10 +107,10 @@ test('run length encoder repeating 16 bit values', () => {
 
   expect(result).toEqual(
     new Uint8Array([
-      24, // IS_16_BIT_VALUES(16) + IS_TWO_ITEM_RANGE(8)
+      41, // IS_16_BIT_VALUES(16) + IS_TWO_ITEM_RANGE(8)
       20, // Value 1
       5, // Value 1
-      24, // IS_16_BIT_VALUES(16) + IS_TWO_ITEM_RANGE(8)
+      41, // IS_16_BIT_VALUES(16) + IS_TWO_ITEM_RANGE(8)
       120, // Value 2
       5, // Value 2
     ])

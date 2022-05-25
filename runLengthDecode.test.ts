@@ -17,6 +17,33 @@ test('run length encoder 16 bit values', () => {
   expect(output).toEqual(input)
 })
 
+test('decode float', () => {
+  const input = [Math.fround(1.3)]
+  const result = runLengthEncode(input)
+  const output = runLengthDecode(result, 0, result.length)
+
+  expect(output).toEqual(input)
+})
+
+test('decode double', () => {
+  const input = [Math.fround(1.3) + 0.00000001]
+  const result = runLengthEncode(input)
+  const output = runLengthDecode(result, 0, result.length)
+
+  expect(output[0]).toBeCloseTo(input[0], 7)
+})
+
+test('decode doubles', () => {
+  const input = [Math.fround(1.3), Math.fround(1.3), 1.3, 1.3, 1.5, 1.6]
+  const result = runLengthEncode(input)
+  const output = runLengthDecode(result, 0, result.length)
+
+  expect(output.length).toEqual(input.length)
+  for (let i = 0; i < output.length; i++) {
+    expect(output[i]).toBeCloseTo(input[i], 6)
+  }
+})
+
 test('encode corner case', () => {
   const input = [1, 15, 2, 0, 1300, 1400]
   const result = runLengthEncode(input)
@@ -47,20 +74,10 @@ test('run length encoder 32 bit values', () => {
   expect(output).toEqual(input)
 })
 
-test.skip('run length encoder fuzz', () => {
-  const MAX_ITEMS = Math.pow(2, 32) - 1
-  const STEP = Math.floor(MAX_ITEMS / 4)
+test.skip('decode floats', () => {
+  const input = [1264.2779047286806]
+  const result = runLengthEncode(input)
+  const output = runLengthDecode(result, 0, result.length)
 
-  // for (let itemLength = 0; itemLength < MAX_ITEMS; itemLength += STEP) {
-  //   const input: number[] = new Array(itemLength)
-
-  //   for (let i = 0; i < itemLength; i++) {
-  //     input[i] = Math.floor(Math.random() * Math.pow(2, 31) - 1)
-  //   }
-  //   console.log({ itemLength })
-  //   const result = runLengthEncode(input)
-  //   const output = runLengthDecode(result)
-
-  //   expect(output).toEqual(input)
-  //}
+  expect(output).toEqual(input)
 })

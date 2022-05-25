@@ -24,7 +24,7 @@ async function run() {
   rows.orders.sort((a, b) => a.locId - b.locId || a.secs - b.secs)
 
   console.log('Mapping...')
-  const serieUncompressed: AnyInputSerie[] = [
+  const serieUncompressed: (AnyInputSerie & { name: string })[] = [
     {
       type: 'number',
       name: 'unixtime',

@@ -22,6 +22,11 @@ export type DecompressedNumberSerie = {
     maxDecimals: number
     min: number
     max: number
+    p02: number
+    p05: number
+    p50: number
+    p95: number
+    p98: number
   }
 }
 export type DecompressedStringSerie = {

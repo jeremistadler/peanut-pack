@@ -33,8 +33,9 @@ while (true) {
     Math.random() > 0.5 ? (Math.random() - 0.5) * 30 : Math.random() * 1000
   const bellSize = Math.random() > 0.5 ? 20 : Math.random() * 1000
 
-  const arr = Array.from({ length: length }, () =>
-    Math.floor(randn_bm() * bellSize + bellCenter)
+  const arr = Array.from(
+    { length: length },
+    () => randn_bm() * bellSize + bellCenter
   )
 
   const encoded = compressSerie({ values: arr, type: 'number' })
@@ -43,9 +44,29 @@ while (true) {
   if (!arrayEqual(arr, decoded)) {
     console.log('FAILED', { length, bellCenter, bellSize })
 
-    writeFileSync('fuzzTestFail-original.txt', arr.join('\n'), 'ascii')
-    writeFileSync('fuzzTestFail-encoded.txt', encoded.join('\n'), 'ascii')
-    writeFileSync('fuzzTestFail-decoded.txt', decoded.join('\n'), 'ascii')
+    writeFileSync(
+      'fuzzTestFail-original.txt',
+      arr.map(f => f.toString()).join('\n'),
+      'ascii'
+    )
+    writeFileSync(
+      'fuzzTestFail-encoded.txt',
+      Array.from(encoded)
+        .map(f => f.toString())
+        .join('\n'),
+      'ascii'
+    )
+    writeFileSync(
+      'fuzzTestFail-decoded.txt',
+      decoded.map(f => f.toString()).join('\n'),
+      'ascii'
+    )
+
+    compressSerie({ values: arr, type: 'number' })
+    decompressSerie(encoded).values as number[]
+
+    compressSerie({ values: arr, type: 'number' })
+    decompressSerie(encoded).values as number[]
 
     process.exit(-1)
   }
@@ -67,12 +88,18 @@ function arrayEqual(buf1: number[], buf2: number[]) {
   }
 
   if (buf1.length !== buf2.length) {
+    console.log('expected length:', buf1.length)
+    console.log('  actual length:', buf2.length)
+    console.log('    diff length:', Math.abs(buf1.length - buf2.length))
     return false
   }
 
   var i = buf1.length
   while (i--) {
-    if (buf1[i] !== buf2[i]) {
+    if (Math.abs(buf1[i] - buf2[i]) > 0.001) {
+      console.log('expected:', buf1[i])
+      console.log('  actual:', buf2[i])
+      console.log('    diff:', Math.abs(buf1[i] - buf2[i]))
       return false
     }
   }
