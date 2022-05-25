@@ -5,47 +5,13 @@ import {
   DecompressedStringSerie,
 } from './types'
 import { TRANSFORM_STRING } from './runLengthEncodeBitMap'
+import { readHeader, Header } from './Header'
 
 export function decompressSerie(serie: Uint8Array): AnyDecompressedSerie {
   const header = readHeader(serie)
 
   if (header.flags & TRANSFORM_STRING) return decompressStringSerie(serie)
   else return decompressNumberSerie(serie, header)
-}
-
-type Header = ReturnType<typeof readHeader>
-function readHeader(rawData: Uint8Array) {
-  const headerSize = rawData[0]
-  const [
-    flags,
-    valueOffset,
-    count,
-    unique,
-    maxDecimals,
-    min,
-    p02,
-    p05,
-    p50,
-    p95,
-    p98,
-    max,
-  ] = runLengthDecode(rawData, 1, headerSize + 1)
-
-  return {
-    valueOffset,
-    headerSize,
-    flags,
-    count,
-    unique,
-    maxDecimals,
-    min,
-    max,
-    p02,
-    p05,
-    p50,
-    p95,
-    p98,
-  }
 }
 
 function decompressNumberSerie(
