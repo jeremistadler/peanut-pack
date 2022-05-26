@@ -117,6 +117,19 @@ test('run length encoder repeating 16 bit values', () => {
   )
 })
 
+test.skip('encode compression', () => {
+  //prettier-ignore
+  const input = [
+    1,2,3,4,5,6,7,8, 
+    1,2,3,4,5,6,7,8, 
+    0,1,2,3,4,5,6,7,
+    1,2,3,4,5,6,7,8, 
+    0,1,2,3,4,5,6,7,
+  ]
+  const result = runLengthEncode(input)
+  expect(result).toEqual(new Uint8Array([]))
+})
+
 // test('read UInt16', () => {
 //   const buff = Buffer.alloc(2)
 //   const MAX = Math.pow(2, 16) - 1

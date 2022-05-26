@@ -12,40 +12,40 @@ type Order = {
 }
 
 async function run() {
-  console.log('Loading from disk...')
+  // console.log('Loading from disk...')
   const data = await readFile(
     '/Users/jeremi/ho/mono/scripts/tempData.json',
     'utf8'
   )
 
-  console.log('Parsing json...')
+  // console.log('Parsing json...')
   const rows = JSON.parse(data) as { orders: Order[] }
 
-  console.log('Sorting...')
+  // console.log('Sorting...')
   rows.orders.sort((a, b) => a.locId - b.locId || a.secs - b.secs)
 
-  console.log('Mapping...')
+  // console.log('Mapping...')
   const serieUncompressed: (AnyInputSerie & { name: string })[] = [
-    // {
-    //   type: 'number',
-    //   name: 'unixtime',
-    //   values: rows.orders.map(row => row.secs),
-    // },
+    {
+      type: 'number',
+      name: 'unixtime',
+      values: rows.orders.map(row => row.secs),
+    },
     {
       type: 'number',
       name: 'locationId',
       values: rows.orders.map(row => row.locId),
     },
-    // {
-    //   type: 'number',
-    //   name: 'total',
-    //   values: rows.orders.map(row => row.total),
-    // },
+    {
+      type: 'number',
+      name: 'total',
+      values: rows.orders.map(row => row.total),
+    },
   ]
 
   await mkdir('./compressed', { recursive: true })
 
-  console.log('compressing ...')
+  // console.log('compressing ...')
 
   const metadataList: { name: string }[] = []
   for (const serie of serieUncompressed) {
@@ -53,8 +53,8 @@ async function run() {
     metadataList.push({ name: serie.name })
 
     console.log(
-      (compressed.length / (1024 * 1024)).toFixed(3),
-      'mb',
+      numberWithSpaces((compressed.length / 1024).toFixed(2)),
+      'kb',
       '  ',
       serie.name
     )
@@ -92,3 +92,9 @@ async function run() {
 run().catch(err => {
   console.error(err)
 })
+
+function numberWithSpaces(x: string) {
+  var parts = x.split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  return parts.join('.')
+}

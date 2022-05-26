@@ -1,6 +1,11 @@
 import { runLengthDecodeGenerator } from './runLengthDecodeGenerator'
 import { Header, readHeader } from './Header'
-import { TRANSFORM_STRING } from './runLengthEncodeBitMap'
+import {
+  TRANSFORM_DELTA,
+  TRANSFORM_DELTA_DELTA,
+  TRANSFORM_STRING,
+} from './runLengthEncodeBitMap'
+import { deltaDecodeGenerator } from './deltaDecode'
 
 export function decompressSerieGenerator(serie: Uint8Array) {
   const header = readHeader(serie)
@@ -24,8 +29,22 @@ function* decompressNumberSerieGenerator(
     serie.length
   )
 
+  const delta1 =
+    (header.flags & TRANSFORM_DELTA) === TRANSFORM_DELTA
+      ? deltaDecodeGenerator()
+      : null
+  const delta2 =
+    (header.flags & TRANSFORM_DELTA_DELTA) === TRANSFORM_DELTA_DELTA
+      ? deltaDecodeGenerator()
+      : null
+
   for (const value of values) {
-    yield value + header.valueOffset
+    let val = value
+
+    if (delta1 !== null) val = delta1(val)
+    if (delta2 !== null) val = delta2(val)
+
+    yield val + header.valueOffset
   }
 }
 

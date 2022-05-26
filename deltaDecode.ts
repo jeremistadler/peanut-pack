@@ -10,3 +10,12 @@ export function deltaDecode(data: number[]): number[] {
 
   return result
 }
+
+export function deltaDecodeGenerator() {
+  let lastValue = 0
+
+  return (val: number) => {
+    lastValue = val + lastValue
+    return lastValue
+  }
+}
