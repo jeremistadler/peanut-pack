@@ -1,7 +1,7 @@
-import { compressSerie } from '../compresser'
+import { compressSerie } from '../src/compresser'
 import { writeFile, readFile, mkdir } from 'fs/promises'
-import { AnyInputSerie } from '../types'
-import { deltaEncode } from '../deltaEncode'
+import { AnyInputSerie } from '../src/types'
+import { deltaEncode } from '../src/deltaEncode'
 
 type Order = {
   date: string
@@ -59,18 +59,18 @@ async function run() {
       serie.name
     )
 
-    await writeFile(
-      './compressed/' + serie.name + '.csv',
-      serie.values.join('\n')
-    )
-    await writeFile(
-      './compressed/' + serie.name + '-delta.csv',
-      deltaEncode(serie.values as number[]).join('\n')
-    )
-    await writeFile(
-      './compressed/' + serie.name + '-delta2.csv',
-      deltaEncode(deltaEncode(serie.values as number[])).join('\n')
-    )
+    // await writeFile(
+    //   './compressed/' + serie.name + '.csv',
+    //   serie.values.join('\n')
+    // )
+    // await writeFile(
+    //   './compressed/' + serie.name + '-delta.csv',
+    //   deltaEncode(serie.values as number[]).join('\n')
+    // )
+    // await writeFile(
+    //   './compressed/' + serie.name + '-delta2.csv',
+    //   deltaEncode(deltaEncode(serie.values as number[])).join('\n')
+    // )
     await writeFile('./compressed/' + serie.name + '.webts', compressed)
   }
 

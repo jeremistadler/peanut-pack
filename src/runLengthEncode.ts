@@ -17,7 +17,7 @@ function appendSingleItems(
   values: IndexableArray,
   startIndex: number,
   endIndexInclusive: number,
-  valueSize: 162 | 226 | 0 | 32 | 96
+  valueSize: 162 | 226 | 0 | 32 | 96,
 ): Buffer {
   const itemCount = endIndexInclusive - startIndex + 1
   let countBitSize = 0 // itemCount >= 65536 ? 4 : itemCount >= 255 ? 2 : 1
@@ -37,7 +37,7 @@ function appendSingleItems(
   }
 
   const buff = Buffer.allocUnsafe(
-    countBitSize + valueSizeToBitSize(valueSize) * itemCount + 1
+    countBitSize + valueSizeToBitSize(valueSize) * itemCount + 1,
   )
   buff.writeUint8(flags, 0)
 
@@ -74,7 +74,7 @@ function appendSingleItems(
     }
   } else {
     throw new Error(
-      'Unsupported flags in appendSingleItems ' + flags.toString(2)
+      'Unsupported flags in appendSingleItems ' + flags.toString(2),
     )
   }
   return buff
@@ -116,7 +116,7 @@ function appendRepeatedItems(value: number, itemCount: number) {
     offset += 8
   } else {
     throw new Error(
-      'Unsupported flags in appendRepeatedItems ' + flags.toString(2)
+      'Unsupported flags in appendRepeatedItems ' + flags.toString(2),
     )
   }
   return buff
@@ -133,7 +133,7 @@ export function runLengthEncode(values: IndexableArray): Uint8Array {
 
     if (i === values.length - 1) {
       buffers.push(
-        appendSingleItems(values, i, i, calculateValueSizeFlag(value))
+        appendSingleItems(values, i, i, calculateValueSizeFlag(value)),
       )
       break
     }
@@ -161,38 +161,38 @@ export function runLengthEncode(values: IndexableArray): Uint8Array {
   return new Uint8Array(
     concated.buffer,
     concated.byteOffset,
-    concated.byteLength
+    concated.byteLength,
   )
 }
 
-function findSubsetIndex(needleIndex: number, values: IndexableArray) {
-  if (needleIndex + 8 >= values.length - 1) return -1
+// function findSubsetIndex(needleIndex: number, values: IndexableArray) {
+//   if (needleIndex + 8 >= values.length - 1) return -1
 
-  const n0 = values[needleIndex + 0]
-  const n1 = values[needleIndex + 1]
-  const n2 = values[needleIndex + 2]
-  const n3 = values[needleIndex + 3]
-  const n4 = values[needleIndex + 4]
-  const n5 = values[needleIndex + 5]
-  const n6 = values[needleIndex + 6]
-  const n7 = values[needleIndex + 7]
+//   const n0 = values[needleIndex + 0]
+//   const n1 = values[needleIndex + 1]
+//   const n2 = values[needleIndex + 2]
+//   const n3 = values[needleIndex + 3]
+//   const n4 = values[needleIndex + 4]
+//   const n5 = values[needleIndex + 5]
+//   const n6 = values[needleIndex + 6]
+//   const n7 = values[needleIndex + 7]
 
-  for (let s = Math.max(0, needleIndex - 255); s < needleIndex - 8; s++) {
-    if (
-      n0 === values[s + 0] &&
-      n1 === values[s + 1] &&
-      n2 === values[s + 2] &&
-      n3 === values[s + 3] &&
-      n4 === values[s + 4] &&
-      n5 === values[s + 5] &&
-      n6 === values[s + 6] &&
-      n7 === values[s + 7]
-    )
-      return s
-  }
+//   for (let s = Math.max(0, needleIndex - 255); s < needleIndex - 8; s++) {
+//     if (
+//       n0 === values[s + 0] &&
+//       n1 === values[s + 1] &&
+//       n2 === values[s + 2] &&
+//       n3 === values[s + 3] &&
+//       n4 === values[s + 4] &&
+//       n5 === values[s + 5] &&
+//       n6 === values[s + 6] &&
+//       n7 === values[s + 7]
+//     )
+//       return s
+//   }
 
-  return -1
-}
+//   return -1
+// }
 
 function valueSizeToBitSize(valueSize: 162 | 226 | 0 | 32 | 96) {
   switch (valueSize) {

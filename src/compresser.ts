@@ -91,6 +91,6 @@ export const transformTypes: ReadonlyArray<TransformType> = [
   'dictionary',
 ]
 
-function compressStringSerie(serie: InputStringSerie): Uint8Array {
+function compressStringSerie(_serie: InputStringSerie): Uint8Array {
   throw new Error('Function not implemented.')
 }

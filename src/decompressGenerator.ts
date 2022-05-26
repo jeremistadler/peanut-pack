@@ -21,12 +21,12 @@ export function decompressSerieGenerator(serie: Uint8Array) {
 
 function* decompressNumberSerieGenerator(
   serie: Uint8Array,
-  header: Header
+  header: Header,
 ): Generator<number, void, void> {
   let values = runLengthDecodeGenerator(
     serie,
     header.headerSize + 1,
-    serie.length
+    serie.length,
   )
 
   const delta1 =
@@ -49,7 +49,7 @@ function* decompressNumberSerieGenerator(
 }
 
 function* decompressStringSerie(
-  serie: Uint8Array
+  _serie: Uint8Array,
 ): Generator<string, void, void> {
   throw new Error('Function not implemented.')
 }
