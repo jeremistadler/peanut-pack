@@ -1,4 +1,8 @@
-import { TRANSFORM_RLE } from './runLengthEncodeBitMap'
+import {
+  TRANSFORM_DELTA,
+  TRANSFORM_DELTA_DELTA,
+  TRANSFORM_RLE,
+} from './runLengthEncodeBitMap'
 import { calculateStats } from './calculateStats'
 import { runLengthEncode } from './runLengthEncode'
 import {
@@ -7,6 +11,7 @@ import {
   InputStringSerie,
   TransformType,
 } from './types'
+import { deltaEncode } from './deltaEncode'
 
 export function compressSerie(serie: AnyInputSerie): Uint8Array {
   switch (serie.type) {
@@ -17,19 +22,48 @@ export function compressSerie(serie: AnyInputSerie): Uint8Array {
   }
 }
 
+function findSmallest(values: number[]) {
+  const deltaValues = deltaEncode(values)
+  const deltaRle = runLengthEncode(deltaValues)
+
+  const delta2Values = deltaEncode(deltaValues)
+  const delta2Rle = runLengthEncode(delta2Values)
+
+  const rle = runLengthEncode(values)
+
+  if (delta2Rle.length < deltaRle.length && delta2Rle.length < rle.length) {
+    return {
+      data: delta2Rle,
+      transforms: TRANSFORM_DELTA_DELTA | TRANSFORM_RLE,
+    }
+  }
+
+  if (deltaRle.length < rle.length) {
+    return {
+      data: deltaRle,
+      transforms: TRANSFORM_DELTA | TRANSFORM_RLE,
+    }
+  }
+
+  return {
+    data: rle,
+    transforms: TRANSFORM_RLE,
+  }
+}
+
 function compressNumberSerie(serie: InputNumberSerie): Uint8Array {
   const stats = calculateStats(serie.values)
 
   const valueOffset = stats.p50 > 1 ? Math.floor(stats.p50) : 0
-  let values = serie.values
+  let offseted = serie.values
   if (valueOffset > 0) {
-    values = serie.values.map(f => f - valueOffset)
+    offseted = serie.values.map(f => f - valueOffset)
   }
 
-  const compressedValues = runLengthEncode(values)
+  const smallest = findSmallest(offseted)
 
   const headerData = runLengthEncode([
-    TRANSFORM_RLE,
+    smallest.transforms,
     valueOffset,
     stats.count,
     stats.unique,
@@ -43,10 +77,10 @@ function compressNumberSerie(serie: InputNumberSerie): Uint8Array {
     stats.max,
   ])
 
-  const final = new Uint8Array(headerData.length + 1 + compressedValues.length)
+  const final = new Uint8Array(headerData.length + 1 + smallest.data.length)
   final[0] = headerData.length
   final.set(headerData, 1)
-  final.set(compressedValues, 1 + headerData.length)
+  final.set(smallest.data, 1 + headerData.length)
 
   return final
 }

@@ -4,8 +4,13 @@ import {
   DecompressedNumberSerie,
   DecompressedStringSerie,
 } from './types'
-import { TRANSFORM_STRING } from './runLengthEncodeBitMap'
+import {
+  TRANSFORM_DELTA,
+  TRANSFORM_DELTA_DELTA,
+  TRANSFORM_STRING,
+} from './runLengthEncodeBitMap'
 import { readHeader, Header } from './Header'
+import { deltaDecode } from './deltaDecode'
 
 export function decompressSerie(serie: Uint8Array): AnyDecompressedSerie {
   const header = readHeader(serie)
@@ -19,6 +24,14 @@ function decompressNumberSerie(
   header: Header
 ): DecompressedNumberSerie {
   let values = runLengthDecode(serie, header.headerSize + 1, serie.length)
+
+  if ((header.flags & TRANSFORM_DELTA) === TRANSFORM_DELTA) {
+    values = deltaDecode(values)
+  }
+
+  if ((header.flags & TRANSFORM_DELTA_DELTA) === TRANSFORM_DELTA_DELTA) {
+    values = deltaDecode(values)
+  }
 
   if (header.valueOffset !== 0) {
     for (let i = 0; i < values.length; i++) {

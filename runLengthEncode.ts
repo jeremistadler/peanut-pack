@@ -19,8 +19,6 @@ function appendSingleItems(
   endIndexInclusive: number,
   valueSize: 162 | 226 | 0 | 32 | 96
 ): Buffer {
-  if (endIndexInclusive >= values.length) debugger
-
   const itemCount = endIndexInclusive - startIndex + 1
   let countBitSize = 0 // itemCount >= 65536 ? 4 : itemCount >= 255 ? 2 : 1
 
@@ -147,11 +145,13 @@ export function runLengthEncode(values: IndexableArray): Uint8Array {
       while (i < values.length && values[i + 1] === value) i++
       buffers.push(appendRepeatedItems(value, i - rangeStartIndex + 1))
     } else {
+      //
+
       const bitSizeFlag = calculateValueSizeFlag(value)
       const rangeStartIndex = i
       while (
         i < values.length - 1 &&
-        values[i + 1] !== value &&
+        values[i + 1] !== values[i] &&
         calculateValueSizeFlag(values[i + 1]) === bitSizeFlag
       )
         i++

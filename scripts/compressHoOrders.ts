@@ -1,6 +1,7 @@
 import { compressSerie } from '../compresser'
 import { writeFile, readFile, mkdir } from 'fs/promises'
 import { AnyInputSerie } from '../types'
+import { deltaEncode } from '../deltaEncode'
 
 type Order = {
   date: string
@@ -25,21 +26,21 @@ async function run() {
 
   console.log('Mapping...')
   const serieUncompressed: (AnyInputSerie & { name: string })[] = [
-    {
-      type: 'number',
-      name: 'unixtime',
-      values: rows.orders.map(row => row.secs),
-    },
+    // {
+    //   type: 'number',
+    //   name: 'unixtime',
+    //   values: rows.orders.map(row => row.secs),
+    // },
     {
       type: 'number',
       name: 'locationId',
       values: rows.orders.map(row => row.locId),
     },
-    {
-      type: 'number',
-      name: 'total',
-      values: rows.orders.map(row => row.total),
-    },
+    // {
+    //   type: 'number',
+    //   name: 'total',
+    //   values: rows.orders.map(row => row.total),
+    // },
   ]
 
   await mkdir('./compressed', { recursive: true })
@@ -58,6 +59,18 @@ async function run() {
       serie.name
     )
 
+    await writeFile(
+      './compressed/' + serie.name + '.csv',
+      serie.values.join('\n')
+    )
+    await writeFile(
+      './compressed/' + serie.name + '-delta.csv',
+      deltaEncode(serie.values as number[]).join('\n')
+    )
+    await writeFile(
+      './compressed/' + serie.name + '-delta2.csv',
+      deltaEncode(deltaEncode(serie.values as number[])).join('\n')
+    )
     await writeFile('./compressed/' + serie.name + '.webts', compressed)
   }
 

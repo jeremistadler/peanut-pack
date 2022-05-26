@@ -18,5 +18,7 @@ export const IS_64_BIT_FLOAT = /*     */ 0b111_000_10
 //
 //
 
-export const TRANSFORM_RLE = /**/ 0b00_00_00_01
-export const TRANSFORM_STRING = /**/ 0b10_00_00_00
+export const TRANSFORM_DELTA = /*      */ 0b00_00_01_00
+export const TRANSFORM_DELTA_DELTA = /**/ 0b00_00_10_00
+export const TRANSFORM_RLE = /*        */ 0b00_00_00_01
+export const TRANSFORM_STRING = /*     */ 0b10_00_00_00
