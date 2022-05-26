@@ -11,7 +11,7 @@ export function deltaDecode(data: number[]): number[] {
   return result
 }
 
-export function deltaDecodeGenerator() {
+export function deltaDecodeStreaming() {
   let lastValue = 0
 
   return (val: number) => {

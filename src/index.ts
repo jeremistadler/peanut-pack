@@ -1,3 +1,5 @@
 export { compressSerie } from './compresser'
-export { decompressSerieGenerator } from './decompressGenerator'
+export { decompressSerie} from './decompresser'
+export { decompressStreaming as decompressSerieGenerator } from './decompressStreaming'
 export type { Header } from './Header'
+export type {AnyInputSerie, InputStringSerie, DecompressedStringSerie, InputNumberSerie} from './types'
