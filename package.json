@@ -1,6 +1,6 @@
 {
   "name": "peanut-pack",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "author": "Jeremi Stadler",
   "main": "dist/index.js",
