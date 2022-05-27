@@ -19,16 +19,19 @@ export function decompressSerie(serie: Uint8Array): AnyDecompressedSerie {
   else return decompressNumberSerie(serie, header)
 }
 
+export function decompressHeader(data: Uint8Array): Header {
+  return readHeader(data)
+}
+
 function decompressNumberSerie(
   serie: Uint8Array,
-  header: Header
+  header: Header,
 ): DecompressedNumberSerie {
   let values = runLengthDecode(serie, header.headerSize + 1, serie.length)
 
   if ((header.flags & TRANSFORM_DELTA) === TRANSFORM_DELTA) {
     values = deltaDecode(values)
   }
-
   if ((header.flags & TRANSFORM_DELTA_DELTA) === TRANSFORM_DELTA_DELTA) {
     values = deltaDecode(values)
   }
@@ -46,6 +49,6 @@ function decompressNumberSerie(
   }
 }
 
-function decompressStringSerie(serie: Uint8Array): DecompressedStringSerie {
+function decompressStringSerie(_serie: Uint8Array): DecompressedStringSerie {
   throw new Error('Function not implemented.')
 }

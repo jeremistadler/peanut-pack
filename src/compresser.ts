@@ -34,7 +34,7 @@ function findSmallest(values: number[]) {
   if (delta2Rle.length < deltaRle.length && delta2Rle.length < rle.length) {
     return {
       data: delta2Rle,
-      transforms: TRANSFORM_DELTA_DELTA | TRANSFORM_RLE,
+      transforms: TRANSFORM_DELTA | TRANSFORM_DELTA_DELTA | TRANSFORM_RLE,
     }
   }
 
