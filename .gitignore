@@ -3,3 +3,7 @@ compressed
 .DS_Store
 yarn-error.log
 dist
+fuzzTestFail-decoded.txt
+fuzzTestFail-decodedStreaming.txt
+fuzzTestFail-encoded.txt
+fuzzTestFail-original.txt

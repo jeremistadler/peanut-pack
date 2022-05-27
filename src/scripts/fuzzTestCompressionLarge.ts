@@ -7,7 +7,7 @@ console.log('Starting fuzz test...')
 
 let iter = 0
 let lastNow = perf.performance.now()
-const logInterval = 100
+const logInterval = 3
 
 while (true) {
   iter++
@@ -23,21 +23,9 @@ while (true) {
     lastNow = perf.performance.now()
   }
 
-  const lengthgBit = Math.random()
-  const length = Math.floor(
-    lengthgBit > 0.9
-      ? Math.random() * 5000000
-      : lengthgBit > 0.5
-      ? Math.random() * 255
-      : Math.random() * 65535 * 2,
-  )
-  const bellCenter =
-    Math.random() > 0.5 ? (Math.random() - 0.5) * 30 : Math.random() * 1000
-  const bellSize = Math.random() > 0.5 ? 20 : Math.random() * 1000
-
-  const arr = Array.from(
-    { length: length },
-    () => randn_bm() * bellSize + bellCenter,
+  const length = 300
+  const arr = Array.from({ length: length }, () =>
+    Math.floor(Math.random() * 10000),
   )
 
   const encoded = compressSerie({ values: arr, type: 'number' })
@@ -47,7 +35,7 @@ while (true) {
   ) as number[]
 
   if (!arrayEqual(arr, decoded) || !arrayEqual(arr, decodedStreaming)) {
-    console.log('FAILED', { length, bellCenter, bellSize })
+    console.log('FAILED')
 
     writeFileSync(
       'fuzzTestFail-original.txt',
@@ -103,6 +91,7 @@ function arrayEqual(buf1: number[], buf2: number[]) {
   var i = buf1.length
   while (i--) {
     if (Math.abs(buf1[i] - buf2[i]) > 0.001) {
+      console.log('   index:', i)
       console.log('expected:', buf1[i])
       console.log('  actual:', buf2[i])
       console.log('    diff:', Math.abs(buf1[i] - buf2[i]))
