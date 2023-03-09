@@ -6,12 +6,13 @@ export function readHeader(rawData: Uint8Array) {
     rawData[0] !== 78 || // N
     rawData[1] !== 117 || // u
     rawData[2] !== 116 || // t
-    rawData[3] !== 95 // _
+    rawData[3] !== 49 // 1
   ) {
     throw new Error('Not a peanut file')
   }
 
   const headerSize = rawData[4]
+
   const [
     flags,
     valueOffset,

@@ -27,7 +27,7 @@ function decompressNumberSerie(
   serie: Uint8Array,
   header: Header,
 ): DecompressedNumberSerie {
-  let values = runLengthDecode(serie, header.headerSize + 1, serie.length)
+  let values = runLengthDecode(serie, header.headerSize + 1 + 4, serie.length)
 
   if ((header.flags & TRANSFORM_DELTA) === TRANSFORM_DELTA) {
     values = deltaDecode(values)

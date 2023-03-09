@@ -25,7 +25,7 @@ test('decompress repeated', () => {
   expect(Array.from(outputEnumerable as any)).toEqual(serie.values)
 })
 
-test('decompress repeated', () => {
+test('decompress non repeating', () => {
   const serie: InputNumberSerie = {
     type: 'number',
     values: [1, 3, 4, 6, 8, 9, 11, 13, 15, 50, 60, 91, 100],

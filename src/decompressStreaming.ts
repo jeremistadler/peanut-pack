@@ -25,7 +25,7 @@ function* decompressNumberSerieGenerator(
 ): Generator<number, void, void> {
   let values = runLengthDecodeGenerator(
     serie,
-    header.headerSize + 1,
+    header.headerSize + 1 + 4,
     serie.length,
   )
 
