@@ -77,10 +77,14 @@ function compressNumberSerie(serie: InputNumberSerie): Uint8Array {
     stats.max,
   ])
 
-  const final = new Uint8Array(headerData.length + 1 + smallest.data.length)
-  final[0] = headerData.length
-  final.set(headerData, 1)
-  final.set(smallest.data, 1 + headerData.length)
+  const final = new Uint8Array(4 + headerData.length + 1 + smallest.data.length)
+  final[0] = 78 // N
+  final[1] = 117 // u
+  final[2] = 116 // t
+  final[3] = 95 // _
+  final[4] = headerData.length
+  final.set(headerData, 1 + 4)
+  final.set(smallest.data, 1 + 4 + headerData.length)
 
   return final
 }

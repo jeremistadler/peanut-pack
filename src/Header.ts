@@ -2,7 +2,16 @@ import { runLengthDecode } from './runLengthDecode'
 
 export type Header = ReturnType<typeof readHeader>
 export function readHeader(rawData: Uint8Array) {
-  const headerSize = rawData[0]
+  if (
+    rawData[0] !== 78 || // N
+    rawData[1] !== 117 || // u
+    rawData[2] !== 116 || // t
+    rawData[3] !== 95 // _
+  ) {
+    throw new Error('Not a peanut file')
+  }
+
+  const headerSize = rawData[4]
   const [
     flags,
     valueOffset,
@@ -16,7 +25,7 @@ export function readHeader(rawData: Uint8Array) {
     p95,
     p98,
     max,
-  ] = runLengthDecode(rawData, 1, headerSize + 1)
+  ] = runLengthDecode(rawData, 1 + 4, headerSize + 1 + 4)
 
   return {
     valueOffset,
